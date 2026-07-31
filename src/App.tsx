@@ -6,7 +6,6 @@ import {
   SideNav,
   SideNavItem,
   SideNavSection,
-  SideNavCollapseButton,
 } from '@astryxdesign/core/SideNav';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
 import { IconButton } from '@astryxdesign/core/IconButton';
@@ -59,11 +58,16 @@ const styles = stylex.create({
     maxWidth: '768px',
     margin: '0 auto',
   },
+  footerButton: {
+    width: '100%',
+    justifyContent: 'flex-start',
+  },
 });
 
 export default function App() {
   const themeMode = useStore((s) => s.settings.themeMode);
   const themeName = useStore((s) => s.settings.themeName) as ThemeName;
+  const sessionsPinned = useStore((s) => s.sessionsPinned);
   const activeTheme = THEMES[themeName] ?? THEMES['midnight-oil'];
 
   useEffect(() => {
@@ -74,7 +78,7 @@ export default function App() {
     <Theme theme={activeTheme} mode={themeMode}>
       <AppShell
         topNav={<TopBar />}
-        sideNav={<SessionSideNav />}
+        sideNav={sessionsPinned ? <SessionSideNav /> : undefined}
         contentPadding={0}
         height="fill"
         variant="wash"
@@ -125,7 +129,7 @@ function TopBar() {
             tooltip="New chat"
             onClick={() => newSession()}
           />
-          {sessions.length > 0 && (
+          {!sessionsPinned && sessions.length > 0 && (
             <DropdownMenu
               button={{
                 label: activeSession?.title || 'Sessions',
@@ -138,6 +142,11 @@ function TopBar() {
                   ? [
                       ...sessionItems,
                       { type: 'divider' as const },
+                      {
+                        label: 'Move to side panel',
+                        onClick: () => setSessionsPinned(true),
+                        icon: <ViewColumnsIcon style={{ width: 14, height: 14 }} />,
+                      },
                       {
                         label: 'Delete current session',
                         onClick: () => activeSessionId && deleteSession(activeSessionId),
@@ -152,23 +161,7 @@ function TopBar() {
           )}
         </div>
       }
-      endContent={
-        <>
-          <IconButton
-            label="Toggle sessions panel"
-            icon={
-              <ViewColumnsIcon
-                style={{ width: 16, height: 16, color: sessionsPinned ? 'var(--color-accent)' : undefined }}
-              />
-            }
-            variant="ghost"
-            size="sm"
-            tooltip={sessionsPinned ? 'Hide side panel' : 'Show side panel'}
-            onClick={() => setSessionsPinned(!sessionsPinned)}
-          />
-          <SettingsPopover />
-        </>
-      }
+      endContent={<SettingsPopover />}
     />
   );
 }
@@ -176,7 +169,6 @@ function TopBar() {
 function SessionSideNav() {
   const sessions = useStore((s) => s.sessions);
   const activeSessionId = useStore((s) => s.activeSessionId);
-  const sessionsPinned = useStore((s) => s.sessionsPinned);
   const setSessionsPinned = useStore((s) => s.setSessionsPinned);
   const newSession = useStore((s) => s.newSession);
   const selectSession = useStore((s) => s.selectSession);
@@ -184,11 +176,6 @@ function SessionSideNav() {
 
   return (
     <SideNav
-      collapsible={{
-        isCollapsed: !sessionsPinned,
-        onCollapsedChange: (c) => setSessionsPinned(!c),
-        hasButton: false,
-      }}
       resizable={{ autoSaveId: 'hush:sessionsWidth', minWidth: 200, maxWidth: 320 }}
       topContent={
         <Button
@@ -199,7 +186,16 @@ function SessionSideNav() {
           icon={<PlusIcon style={{ width: 14, height: 14 }} />}
         />
       }
-      footerIcons={<SideNavCollapseButton />}
+      footer={
+        <Button
+          label="Show as button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setSessionsPinned(false)}
+          icon={<ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />}
+          xstyle={styles.footerButton}
+        />
+      }
     >
       <SideNavSection title="Sessions">
         {sessions.map((s) => (
