@@ -43,6 +43,14 @@ const styles = stylex.create({
     margin: '0 auto',
     overflow: 'hidden',
   },
+  composer: {
+    maxWidth: '768px',
+    margin: '0 auto',
+  },
+  topNav: {
+    maxWidth: '768px',
+    margin: '0 auto',
+  },
 });
 
 export default function App() {
@@ -54,7 +62,7 @@ export default function App() {
         sideNav={undefined}
         contentPadding={0}
         height="fill"
-        variant="section"
+        variant="wash"
       >
         <ChatArea />
         <ApiKeyDialog />
@@ -79,6 +87,7 @@ function TopBar() {
 
   return (
     <TopNav
+      xstyle={styles.topNav}
       heading={
         <TopNavHeading
           heading="hush"
@@ -284,6 +293,7 @@ function ComposerShell({
 }) {
   return (
     <ChatComposer
+      xstyle={styles.composer}
       value={value}
       onChange={onChange}
       onSubmit={onSubmit}
