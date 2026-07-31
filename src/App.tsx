@@ -235,28 +235,39 @@ function ChatArea() {
                 }
               >
                 {msg.toolCalls && msg.toolCalls.length > 0 && (
-                  <div className="hush-tool-calls">
-                    {msg.toolCalls.map((tc) => {
-                      const meta = TOOL_META[tc.name];
-                      return (
-                        <details key={tc.id} className={`hush-tool-chip ${tc.status}`} open={tc.status === 'running' || tc.status === 'error'}>
-                          <summary>
-                            <span className="hush-tool-icon">{meta?.icon || '🔧'}</span>
-                            <span className="hush-tool-label">{meta?.label || tc.name}</span>
-                            <span className={`hush-tool-status hush-tool-status-${tc.status}`}>
-                              {tc.status === 'running' ? '...' : tc.status === 'error' ? '⚠' : '✓'}
-                            </span>
-                          </summary>
-                          {tc.result && (
-                            <pre className="hush-tool-result">{tc.result.slice(0, 2000)}</pre>
-                          )}
-                          {tc.error && (
-                            <pre className="hush-tool-result hush-tool-error">{tc.error}</pre>
-                          )}
-                        </details>
-                      );
-                    })}
-                  </div>
+                  <details className="hush-tool-stack" open={msg.toolCalls.some(tc => tc.status === 'running' || tc.status === 'error')}>
+                    <summary>
+                      <span className="hush-tool-stack-icon">
+                        {msg.toolCalls.some(tc => tc.status === 'running') ? '⚙' : msg.toolCalls.some(tc => tc.status === 'error') ? '⚠' : '✓'}
+                      </span>
+                      <span className="hush-tool-stack-label">
+                        {msg.toolCalls.length} tool {msg.toolCalls.length === 1 ? 'call' : 'calls'}
+                      </span>
+                      <span className="hush-tool-stack-chevron">▾</span>
+                    </summary>
+                    <div className="hush-tool-calls">
+                      {msg.toolCalls.map((tc) => {
+                        const meta = TOOL_META[tc.name];
+                        return (
+                          <details key={tc.id} className={`hush-tool-chip ${tc.status}`}>
+                            <summary>
+                              <span className="hush-tool-icon">{meta?.icon || '🔧'}</span>
+                              <span className="hush-tool-label">{meta?.label || tc.name}</span>
+                              <span className={`hush-tool-status hush-tool-status-${tc.status}`}>
+                                {tc.status === 'running' ? '...' : tc.status === 'error' ? '⚠' : '✓'}
+                              </span>
+                            </summary>
+                            {tc.result && (
+                              <pre className="hush-tool-result">{tc.result.slice(0, 2000)}</pre>
+                            )}
+                            {tc.error && (
+                              <pre className="hush-tool-result hush-tool-error">{tc.error}</pre>
+                            )}
+                          </details>
+                        );
+                      })}
+                    </div>
+                  </details>
                 )}
                 <Markdown content={msg.content || '...'} />
               </ChatMessageBubble>
