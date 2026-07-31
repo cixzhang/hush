@@ -62,12 +62,35 @@ const styles = stylex.create({
     width: '100%',
     justifyContent: 'flex-start',
   },
+  floatingRoot: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 40,
+  },
+  floatingScrim: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+  },
+  floatingPanel: {
+    position: 'absolute',
+    top: 'var(--appshell-header-height, 64px)',
+    bottom: 0,
+    insetInlineStart: 0,
+    backgroundColor: 'var(--color-background-surface)',
+    boxShadow: '0 0 0 1px var(--color-border), 0 8px 32px rgba(0, 0, 0, 0.35)',
+    borderStartEndRadius: 'var(--radius-2, 8px)',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+  },
 });
 
 export default function App() {
   const themeMode = useStore((s) => s.settings.themeMode);
   const themeName = useStore((s) => s.settings.themeName) as ThemeName;
   const sessionsPinned = useStore((s) => s.sessionsPinned);
+  const setSessionsPinned = useStore((s) => s.setSessionsPinned);
   const activeTheme = THEMES[themeName] ?? THEMES['midnight-oil'];
 
   useEffect(() => {
@@ -78,15 +101,41 @@ export default function App() {
     <Theme theme={activeTheme} mode={themeMode}>
       <AppShell
         topNav={<TopBar />}
-        sideNav={sessionsPinned ? <SessionSideNav /> : undefined}
+        sideNav={undefined}
         contentPadding={0}
         height="fill"
         variant="wash"
       >
         <ChatArea />
         <ApiKeyDialog />
+        {sessionsPinned && (
+          <FloatingSessionPanel onClose={() => setSessionsPinned(false)} />
+        )}
       </AppShell>
     </Theme>
+  );
+}
+
+function FloatingSessionPanel({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div {...stylex.props(styles.floatingRoot)}>
+      <div
+        {...stylex.props(styles.floatingScrim)}
+        role="presentation"
+        onClick={onClose}
+      />
+      <div {...stylex.props(styles.floatingPanel)}>
+        <SessionSideNav />
+      </div>
+    </div>
   );
 }
 
