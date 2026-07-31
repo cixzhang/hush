@@ -13,7 +13,7 @@ import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 
 const styles = stylex.create({
   popoverContent: {
-    padding: 'var(--spacing-3)',
+    padding: '8px',
     minWidth: '280px',
   },
   row: {
