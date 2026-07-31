@@ -252,6 +252,85 @@ button[data-variant="outline"]:hover {
   border-radius: 6px;
 }
 
+/* ===== Per-theme SegmentedControl & Selector styling ===== */
+/* The SegmentedControl (mode toggle) and Selector (theme dropdown) use neutral
+   tokens by default. These rules override their appearance per theme so they
+   match the theme's accent and surface colors. */
+
+/* SegmentedControl container: themed background track */
+[role="radiogroup"] {
+  background: var(--color-background-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2, 8px);
+}
+
+/* Selected segment: themed accent fill */
+[role="radiogroup"] [role="radio"][aria-checked="true"] {
+  background: var(--color-accent);
+  color: var(--color-background-surface);
+  border-color: var(--color-accent);
+}
+
+[role="radiogroup"] [role="radio"][aria-checked="true"] svg {
+  color: var(--color-background-surface);
+}
+
+/* Unselected segment: transparent, themed text on hover */
+[role="radiogroup"] [role="radio"]:not([aria-checked="true"]):hover {
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+}
+
+/* Cold Cathode: terminal-style segmented control */
+[data-theme-name="cold-cathode"] [role="radiogroup"] {
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.05);
+}
+
+[data-theme-name="cold-cathode"] [role="radiogroup"] [role="radio"][aria-checked="true"] {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ADE80;
+  border-color: rgba(74, 222, 128, 0.4);
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+[data-theme-name="cold-cathode"] [role="radiogroup"] [role="radio"][aria-checked="true"] svg {
+  color: #4ADE80;
+}
+
+/* Midnight Oil: warm amber selected segment */
+[data-theme-name="midnight-oil"] [role="radiogroup"] [role="radio"][aria-checked="true"] {
+  background: rgba(212, 160, 85, 0.15);
+  color: #D4A055;
+  border-color: rgba(212, 160, 85, 0.3);
+}
+
+[data-theme-name="midnight-oil"] [role="radiogroup"] [role="radio"][aria-checked="true"] svg {
+  color: #D4A055;
+}
+
+/* Paper Bleed: burnt sienna selected segment */
+[data-theme-name="paper-bleed"] [role="radiogroup"] [role="radio"][aria-checked="true"] {
+  background: rgba(232, 101, 30, 0.12);
+  color: #E8651E;
+  border-color: rgba(232, 101, 30, 0.3);
+}
+
+[data-theme-name="paper-bleed"] [role="radiogroup"] [role="radio"][aria-checked="true"] svg {
+  color: #E8651E;
+}
+
+/* Violet Hour: purple selected segment */
+[data-theme-name="violet-hour"] [role="radiogroup"] [role="radio"][aria-checked="true"] {
+  background: rgba(167, 139, 250, 0.12);
+  color: #A78BFA;
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+[data-theme-name="violet-hour"] [role="radiogroup"] [role="radio"][aria-checked="true"] svg {
+  color: #A78BFA;
+}
+
 /* ===== Message list bottom padding so content isn't hidden under composer ===== */
 .astryx-chat-layout > div:first-child {
   padding-block-end: 120px !important;
