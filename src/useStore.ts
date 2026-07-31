@@ -1,6 +1,7 @@
 import { create } from './store';
 import { streamChat } from './openrouter';
 import type { Session, Settings, Message } from './types';
+import type { ToolCall } from './tools';
 import {
   loadSessions, saveSessions,
   loadSettings, saveSettings,
@@ -124,21 +125,45 @@ export const useStore = create<AppState>((set, get) => ({
       await streamChat(
         allMessages,
         get().settings,
-        (token) => {
-          set((s) => ({
-            sessions: s.sessions.map((sess) =>
-              sess.id === sessionId
-                ? {
-                    ...sess,
-                    messages: sess.messages.map((m) =>
-                      m.id === assistantMsg.id
-                        ? { ...m, content: m.content + token }
-                        : m,
-                    ),
-                  }
-                : sess,
-            ),
-          }));
+        {
+          onToken: (token) => {
+            set((s) => ({
+              sessions: s.sessions.map((sess) =>
+                sess.id === sessionId
+                  ? {
+                      ...sess,
+                      messages: sess.messages.map((m) =>
+                        m.id === assistantMsg.id
+                          ? { ...m, content: m.content + token }
+                          : m,
+                      ),
+                    }
+                  : sess,
+              ),
+            }));
+          },
+          onToolCallUpdate: (tc: ToolCall) => {
+            set((s) => ({
+              sessions: s.sessions.map((sess) =>
+                sess.id === sessionId
+                  ? {
+                      ...sess,
+                      messages: sess.messages.map((m) => {
+                        if (m.id !== assistantMsg.id) return m;
+                        const calls = [...(m.toolCalls || [])];
+                        const existingIdx = calls.findIndex(c => c.id === tc.id);
+                        if (existingIdx >= 0) {
+                          calls[existingIdx] = tc;
+                        } else {
+                          calls.push(tc);
+                        }
+                        return { ...m, toolCalls: calls };
+                      }),
+                    }
+                  : sess,
+              ),
+            }));
+          },
         },
         abortController.signal,
       );

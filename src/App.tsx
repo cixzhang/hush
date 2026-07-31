@@ -19,6 +19,7 @@ import { useStore } from './useStore';
 import { ApiKeyDialog } from './SettingsDialog';
 import { SettingsPopover } from './SettingsPopover';
 import { THEMES, type ThemeName } from './themes';
+import { TOOL_META } from './tools';
 import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
@@ -219,10 +220,10 @@ function ChatArea() {
         }
       >
         <ChatMessageList isStreaming={isStreaming}>
-          {messages.map((msg) => (
+          {messages.filter(m => m.role !== 'tool').map((msg) => (
             <ChatMessage
               key={msg.id}
-              sender={msg.role === 'system' ? 'system' : msg.role}
+              sender={msg.role === 'system' ? 'system' : msg.role as 'user' | 'assistant' | 'system'}
             >
               <ChatMessageBubble
                 variant={msg.role === 'assistant' ? 'ghost' : 'filled'}
@@ -235,6 +236,30 @@ function ChatArea() {
                   />
                 }
               >
+                {msg.toolCalls && msg.toolCalls.length > 0 && (
+                  <div className="hush-tool-calls">
+                    {msg.toolCalls.map((tc) => {
+                      const meta = TOOL_META[tc.name];
+                      return (
+                        <details key={tc.id} className={`hush-tool-chip ${tc.status}`} open={tc.status === 'running' || tc.status === 'error'}>
+                          <summary>
+                            <span className="hush-tool-icon">{meta?.icon || '🔧'}</span>
+                            <span className="hush-tool-label">{meta?.label || tc.name}</span>
+                            <span className={`hush-tool-status hush-tool-status-${tc.status}`}>
+                              {tc.status === 'running' ? '...' : tc.status === 'error' ? '⚠' : '✓'}
+                            </span>
+                          </summary>
+                          {tc.result && (
+                            <pre className="hush-tool-result">{tc.result.slice(0, 2000)}</pre>
+                          )}
+                          {tc.error && (
+                            <pre className="hush-tool-result hush-tool-error">{tc.error}</pre>
+                          )}
+                        </details>
+                      );
+                    })}
+                  </div>
+                )}
                 <Text type="body">{msg.content || '...'}</Text>
               </ChatMessageBubble>
             </ChatMessage>

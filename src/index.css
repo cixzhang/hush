@@ -110,3 +110,96 @@ button[data-variant="outline"]:hover {
   border: 1px solid rgba(74, 222, 128, 0.2);
   box-shadow: 0 0 12px rgba(74, 222, 128, 0.05);
 }
+
+/* ===== Tool call chips ===== */
+
+.hush-tool-calls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.hush-tool-chip {
+  background: var(--color-background-muted, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  border-radius: 6px;
+  font-size: 0.75rem;
+  overflow: hidden;
+}
+
+.hush-tool-chip summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  color: var(--color-text-secondary);
+}
+
+.hush-tool-chip summary::-webkit-details-marker {
+  display: none;
+}
+
+.hush-tool-chip summary:hover {
+  background: var(--color-background-surface);
+}
+
+.hush-tool-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.hush-tool-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.hush-tool-status {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.hush-tool-status-running {
+  animation: hush-pulse 1s ease-in-out infinite;
+}
+
+@keyframes hush-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.hush-tool-status-done {
+  color: var(--color-accent);
+}
+
+.hush-tool-status-error {
+  color: #e8593d;
+}
+
+.hush-tool-result {
+  margin: 0;
+  padding: 6px 8px;
+  font-family: var(--font-family-code, ui-monospace, monospace);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  background: var(--color-background-body, rgba(0, 0, 0, 0.03));
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.hush-tool-error {
+  color: #e8593d;
+}
+
+/* Render images from image_gen tool */
+.hush-tool-result img,
+.hush-tool-result a {
+  max-width: 100%;
+  border-radius: 6px;
+}

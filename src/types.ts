@@ -1,10 +1,13 @@
-export type Role = 'user' | 'assistant' | 'system';
+import type { ToolCall } from './tools';
+
+export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
 export interface Message {
   id: string;
   role: Role;
   content: string;
   createdAt: number;
+  toolCalls?: ToolCall[];
 }
 
 export interface Session {
