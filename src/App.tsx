@@ -260,43 +260,6 @@ function ChatComposerMinimal({
   onStop: () => void;
   disabled?: boolean;
 }) {
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      onSubmit(value);
-    }
-  };
-
-  return (
-    <ComposerShell
-      value={value}
-      onChange={onChange}
-      onSubmit={onSubmit}
-      isStreaming={isStreaming}
-      onStop={onStop}
-      disabled={disabled}
-      handleKeyDown={handleKeyDown}
-    />
-  );
-}
-
-function ComposerShell({
-  value,
-  onChange,
-  onSubmit,
-  isStreaming,
-  onStop,
-  disabled,
-  handleKeyDown,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  onSubmit: (v: string) => void;
-  isStreaming: boolean;
-  onStop: () => void;
-  disabled?: boolean;
-  handleKeyDown: (e: React.KeyboardEvent) => void;
-}) {
   return (
     <ChatComposer
       xstyle={styles.composer}
@@ -307,7 +270,6 @@ function ComposerShell({
       isStopShown={isStreaming}
       isDisabled={disabled}
       placeholder={disabled ? 'Set your API key in settings to start...' : 'Type a message...'}
-      onKeyDown={handleKeyDown}
     />
   );
 }
