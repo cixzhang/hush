@@ -38,6 +38,21 @@ export function saveActiveSession(id: string | null) {
   else localStorage.removeItem(ACTIVE_KEY);
 }
 
+const SESSION_PIN_KEY = 'hush:sessionsPinned';
+
+export function loadSessionsPinned(): boolean {
+  try {
+    const raw = localStorage.getItem(SESSION_PIN_KEY);
+    return raw === null ? true : raw === 'true';
+  } catch {
+    return true;
+  }
+}
+
+export function saveSessionsPinned(pinned: boolean) {
+  localStorage.setItem(SESSION_PIN_KEY, String(pinned));
+}
+
 export function genId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }

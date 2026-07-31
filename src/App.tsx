@@ -2,9 +2,15 @@ import * as stylex from '@stylexjs/stylex';
 import { useState, useEffect } from 'react';
 import { Theme } from '@astryxdesign/core/theme';
 import { AppShell } from '@astryxdesign/core/AppShell';
+import {
+  SideNav,
+  SideNavItem,
+  SideNavSection,
+  SideNavCollapseButton,
+} from '@astryxdesign/core/SideNav';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
 import { IconButton } from '@astryxdesign/core/IconButton';
-import { DropdownMenu } from '@astryxdesign/core/DropdownMenu';
+import { Button } from '@astryxdesign/core/Button';
 import {
   ChatLayout,
   ChatMessageList,
@@ -66,7 +72,7 @@ export default function App() {
     <Theme theme={activeTheme} mode={themeMode}>
       <AppShell
         topNav={<TopBar />}
-        sideNav={undefined}
+        sideNav={<SessionSideNav />}
         contentPadding={0}
         height="fill"
         variant="wash"
@@ -79,18 +85,7 @@ export default function App() {
 }
 
 function TopBar() {
-  const sessions = useStore((s) => s.sessions);
-  const activeSessionId = useStore((s) => s.activeSessionId);
   const newSession = useStore((s) => s.newSession);
-  const selectSession = useStore((s) => s.selectSession);
-  const deleteSession = useStore((s) => s.deleteSession);
-  const activeSession = sessions.find((s) => s.id === activeSessionId);
-
-  const sessionItems = sessions.map((s) => ({
-    label: s.title || 'Untitled',
-    onClick: () => selectSession(s.id),
-    icon: <ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />,
-  }));
 
   return (
     <TopNav
@@ -115,35 +110,66 @@ function TopBar() {
             tooltip="New chat"
             onClick={() => newSession()}
           />
-          {sessions.length > 0 && (
-            <DropdownMenu
-              button={{
-                label: activeSession?.title || 'Sessions',
-                variant: 'ghost',
-                size: 'sm',
-                icon: <ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />,
-              }}
-              items={
-                sessionItems.length > 0
-                  ? [
-                      ...sessionItems,
-                      { type: 'divider' as const },
-                      {
-                        label: 'Delete current session',
-                        onClick: () => activeSessionId && deleteSession(activeSessionId),
-                        icon: <TrashIcon style={{ width: 14, height: 14 }} />,
-                      },
-                    ]
-                  : []
-              }
-              hasChevron
-              menuWidth={260}
-            />
-          )}
         </div>
       }
       endContent={<SettingsPopover />}
     />
+  );
+}
+
+function SessionSideNav() {
+  const sessions = useStore((s) => s.sessions);
+  const activeSessionId = useStore((s) => s.activeSessionId);
+  const sessionsPinned = useStore((s) => s.sessionsPinned);
+  const setSessionsPinned = useStore((s) => s.setSessionsPinned);
+  const newSession = useStore((s) => s.newSession);
+  const selectSession = useStore((s) => s.selectSession);
+  const deleteSession = useStore((s) => s.deleteSession);
+
+  return (
+    <SideNav
+      collapsible={{
+        isCollapsed: !sessionsPinned,
+        onCollapsedChange: (c) => setSessionsPinned(!c),
+        hasButton: false,
+      }}
+      resizable={{ autoSaveId: 'hush:sessionsWidth', minWidth: 200, maxWidth: 320 }}
+      topContent={
+        <Button
+          label="New chat"
+          variant="secondary"
+          size="sm"
+          onClick={() => newSession()}
+          icon={<PlusIcon style={{ width: 14, height: 14 }} />}
+        />
+      }
+      footerIcons={<SideNavCollapseButton />}
+    >
+      <SideNavSection title="Sessions">
+        {sessions.map((s) => (
+          <SideNavItem
+            key={s.id}
+            label={s.title || 'Untitled'}
+            icon={<ChatBubbleLeftRightIcon style={{ width: 16, height: 16 }} />}
+            isSelected={s.id === activeSessionId}
+            onClick={() => selectSession(s.id)}
+            endContent={
+              <IconButton
+                label="Delete session"
+                icon={<TrashIcon style={{ width: 14, height: 14 }} />}
+                variant="ghost"
+                size="sm"
+                tooltip="Delete session"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteSession(s.id);
+                }}
+              />
+            }
+          />
+        ))}
+      </SideNavSection>
+    </SideNav>
   );
 }
 

@@ -6,6 +6,7 @@ import {
   loadSessions, saveSessions,
   loadSettings, saveSettings,
   loadActiveSession, saveActiveSession,
+  loadSessionsPinned, saveSessionsPinned,
   createSession, createMessage,
 } from './storage';
 
@@ -15,6 +16,7 @@ interface AppState {
   settings: Settings;
   isStreaming: boolean;
   isApiKeyOpen: boolean;
+  sessionsPinned: boolean;
 
   // derived
   activeSession: () => Session | undefined;
@@ -28,6 +30,8 @@ interface AppState {
   stopStreaming: () => void;
   updateSettings: (partial: Partial<Settings>) => void;
   setApiKeyOpen: (open: boolean) => void;
+  setSessionsPinned: (pinned: boolean) => void;
+  toggleSessionsPinned: () => void;
 }
 
 let abortController: AbortController | null = null;
@@ -38,6 +42,7 @@ export const useStore = create<AppState>((set, get) => ({
   settings: loadSettings(),
   isStreaming: false,
   isApiKeyOpen: false,
+  sessionsPinned: loadSessionsPinned(),
 
   activeSession: () => {
     const { sessions, activeSessionId } = get();
@@ -205,4 +210,15 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setApiKeyOpen: (open) => set({ isApiKeyOpen: open }),
+
+  setSessionsPinned: (pinned) => {
+    set({ sessionsPinned: pinned });
+    saveSessionsPinned(pinned);
+  },
+
+  toggleSessionsPinned: () => {
+    const next = !get().sessionsPinned;
+    set({ sessionsPinned: next });
+    saveSessionsPinned(next);
+  },
 }));
