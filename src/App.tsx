@@ -44,8 +44,7 @@ const styles = stylex.create({
     overflow: 'hidden',
   },
   composer: {
-    maxWidth: '768px',
-    margin: '0 auto',
+    width: '100%',
   },
   topNav: {
     maxWidth: '768px',
