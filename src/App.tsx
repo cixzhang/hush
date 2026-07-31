@@ -218,7 +218,9 @@ function ChatArea() {
         }
       >
         <ChatMessageList isStreaming={isStreaming}>
-          {messages.filter(m => m.role !== 'tool').map((msg) => (
+          {messages.filter(m => m.role !== 'tool').map((msg, idx, arr) => {
+            const isLast = idx === arr.length - 1 && msg.role === 'assistant';
+            return (
             <ChatMessage
               key={msg.id}
               sender={msg.role === 'system' ? 'system' : msg.role as 'user' | 'assistant' | 'system'}
@@ -269,10 +271,11 @@ function ChatArea() {
                     </div>
                   </details>
                 )}
-                <Markdown isStreaming={isStreaming}>{msg.content || '...'}</Markdown>
+                <Markdown isStreaming={isStreaming && isLast}>{msg.content || '...'}</Markdown>
               </ChatMessageBubble>
             </ChatMessage>
-          ))}
+            );
+          })}
         </ChatMessageList>
       </ChatLayout>
     </div>

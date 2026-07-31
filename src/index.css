@@ -331,9 +331,83 @@ button[data-variant="outline"]:hover {
   color: #A78BFA;
 }
 
+/* ===== Per-theme codeblock syntax colors ===== */
+/* The Astryx CodeBlock uses --color-syntax-* tokens from the neutral theme.
+   Override these per theme so codeblocks match each theme's palette. */
+
+/* Midnight Oil: warm dark codeblock, amber-tinted syntax */
+[data-theme-name="midnight-oil"] {
+  --color-syntax-background: light-dark(#F5F0E8, #15110D);
+  --color-syntax-keyword: light-dark(#8B5A1A, #D4A055);
+  --color-syntax-string: light-dark(#5A7A3A, #A8C87A);
+  --color-syntax-comment: light-dark(#9C8E7E, #6B5F52);
+  --color-syntax-number: light-dark(#B8702A, #E8B870);
+  --color-syntax-function: light-dark(#4A6A8A, #8AB4D8);
+  --color-syntax-type: light-dark(#8B5A1A, #D4A055);
+  --color-syntax-variable: light-dark(#1A1612, #E8E0D4);
+  --color-syntax-operator: light-dark(#5C5045, #A89B89);
+  --color-syntax-constant: light-dark(#B8702A, #E8B870);
+  --color-syntax-tag: light-dark(#A04020, #E88060);
+  --color-syntax-attribute: light-dark(#8B6A1A, #D4A055);
+  --color-syntax-property: light-dark(#3A7A5A, #7AC8A0);
+  --color-syntax-punctuation: light-dark(#9C8E7E, #A89B89);
+}
+
+/* Cold Cathode: green-on-black terminal codeblock */
+[data-theme-name="cold-cathode"] {
+  --color-syntax-background: light-dark(#E8EFE8, #0D130D);
+  --color-syntax-keyword: light-dark(#2D7A2D, #4ADE80);
+  --color-syntax-string: light-dark(#4A8A4A, #6ADE80);
+  --color-syntax-comment: light-dark(#6A8A6A, #4A5F4A);
+  --color-syntax-number: light-dark(#2D7A2D, #4ADE80);
+  --color-syntax-function: light-dark(#3A6A9A, #6AC8E0);
+  --color-syntax-type: light-dark(#2D7A2D, #4ADE80);
+  --color-syntax-variable: light-dark(#0A1A0A, #C8D0C5);
+  --color-syntax-operator: light-dark(#6A8A6A, #7A8A7A);
+  --color-syntax-constant: light-dark(#2D7A2D, #4ADE80);
+  --color-syntax-tag: light-dark(#A04020, #E88060);
+  --color-syntax-attribute: light-dark(#4A6A4A, #8AC88A);
+  --color-syntax-property: light-dark(#2D7A2D, #4ADE80);
+  --color-syntax-punctuation: light-dark(#6A8A6A, #7A8A7A);
+}
+
+/* Paper Bleed: warm paper codeblock, sienna-tinted syntax */
+[data-theme-name="paper-bleed"] {
+  --color-syntax-background: light-dark(#E8E0D0, #1A1612);
+  --color-syntax-keyword: light-dark(#B8390E, #E8651E);
+  --color-syntax-string: light-dark(#5A7A3A, #A8C87A);
+  --color-syntax-comment: light-dark(#9C8868, #6B5A45);
+  --color-syntax-number: light-dark(#B8390E, #E88040);
+  --color-syntax-function: light-dark(#4A6A8A, #8AB4D8);
+  --color-syntax-type: light-dark(#B8390E, #E8651E);
+  --color-syntax-variable: light-dark(#1A1208, #E8DDC8);
+  --color-syntax-operator: light-dark(#7C6850, #A89878);
+  --color-syntax-constant: light-dark(#B8390E, #E88040);
+  --color-syntax-tag: light-dark(#A04020, #E88060);
+  --color-syntax-attribute: light-dark(#8B6A1A, #D4A055);
+  --color-syntax-property: light-dark(#3A7A5A, #7AC8A0);
+  --color-syntax-punctuation: light-dark(#9C8868, #A89878);
+}
+
+/* Violet Hour: soft purple codeblock, violet-tinted syntax */
+[data-theme-name="violet-hour"] {
+  --color-syntax-background: light-dark(#F0EAF5, #13101A);
+  --color-syntax-keyword: light-dark(#7C3AED, #A78BFA);
+  --color-syntax-string: light-dark(#5A8A5A, #8AC88A);
+  --color-syntax-comment: light-dark(#9C8AAE, #6B5C7E);
+  --color-syntax-number: light-dark(#8B5CF6, #C4A8FF);
+  --color-syntax-function: light-dark(#4A6AAA, #8AB4E8);
+  --color-syntax-type: light-dark(#7C3AED, #A78BFA);
+  --color-syntax-variable: light-dark(#1A1020, #E4DFEB);
+  --color-syntax-operator: light-dark(#7C6A8A, #9C8FB0);
+  --color-syntax-constant: light-dark(#8B5CF6, #C4A8FF);
+  --color-syntax-tag: light-dark(#A04020, #E88060);
+  --color-syntax-attribute: light-dark(#6A4A8A, #B89AE0);
+  --color-syntax-property: light-dark(#3A7A7A, #7AC8C8);
+  --color-syntax-punctuation: light-dark(#9C8AAE, #9C8FB0);
+}
+
 /* ===== Message list bottom padding so content isn't hidden under composer ===== */
 .astryx-chat-layout > div:first-child {
   padding-block-end: 120px !important;
 }
-
-
