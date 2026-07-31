@@ -58,6 +58,10 @@ export async function streamChat(
     }
   }
 
+  // Track all tool calls across iterations so we can mark them done
+  // only when the entire turn completes (keeps the stack cohesive)
+  const allToolCalls: ToolCall[] = [];
+
   // Main loop: send messages, check for tool calls, execute, repeat
   let maxIterations = 5;
   while (maxIterations-- > 0) {
@@ -132,6 +136,13 @@ export async function streamChat(
 
     // If no tool calls, we're done
     if (toolCallsMap.size === 0) {
+      // Mark any previously-running tool calls from earlier iterations as done
+      for (const tc of allToolCalls) {
+        if (tc.status === 'running') {
+          tc.status = 'done';
+          onToolCallUpdate?.(tc);
+        }
+      }
       return;
     }
 
@@ -162,20 +173,22 @@ export async function streamChat(
     });
 
     // Mark all as running immediately so they stack in the UI
-    const toolCalls: ToolCall[] = toolCallEntries.map(tc => ({
+    const newToolCalls: ToolCall[] = toolCallEntries.map(tc => ({
       ...tc,
       status: 'running' as const,
     }));
-    for (const tc of toolCalls) {
+    allToolCalls.push(...newToolCalls);
+    for (const tc of newToolCalls) {
       onToolCallUpdate?.(tc);
     }
 
     // Execute all tools concurrently
-    await Promise.all(toolCalls.map(async (tc) => {
+    await Promise.all(newToolCalls.map(async (tc) => {
       try {
         const result = await executeTool(tc.name, tc.args);
         tc.result = result;
-        tc.status = 'done';
+        // Don't mark as done yet — keep showing as running until the whole
+        // turn completes so the stack looks cohesive across iterations
       } catch (e) {
         tc.error = (e as Error).message;
         tc.status = 'error';
@@ -193,6 +206,14 @@ export async function streamChat(
     // Loop continues — send the updated messages back to get the final response
     contentText = '';
     toolCallsMap = new Map();
+  }
+
+  // Final safety: mark any remaining running tools as done
+  for (const tc of allToolCalls) {
+    if (tc.status === 'running') {
+      tc.status = 'done';
+      onToolCallUpdate?.(tc);
+    }
   }
 }
 
