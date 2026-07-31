@@ -13,7 +13,7 @@ import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 
 const styles = stylex.create({
   popoverContent: {
-    padding: '8px',
+    padding: '4px',
     minWidth: '280px',
   },
   row: {
@@ -24,6 +24,9 @@ const styles = stylex.create({
   },
   label: {
     paddingTop: 'var(--spacing-1)',
+  },
+  settingsButton: {
+    paddingInline: 'var(--spacing-2)',
   },
 });
 
@@ -89,9 +92,14 @@ export function SettingsPopover() {
         </div>
       }
     >
-      <button ref={triggerRef} aria-label="Settings" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'inherit', display: 'flex' }}>
-        <Cog6ToothIcon style={{ width: 18, height: 18 }} />
-      </button>
+      <Button
+        ref={triggerRef}
+        label="Settings"
+        variant="secondary"
+        size="sm"
+        icon={<Cog6ToothIcon style={{ width: 16, height: 16 }} />}
+        xstyle={styles.settingsButton}
+      />
     </Popover>
   );
 }

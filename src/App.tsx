@@ -70,7 +70,7 @@ const styles = stylex.create({
     bottom: 0,
     insetInlineStart: 0,
     backgroundColor: 'var(--color-background-surface)',
-    boxShadow: '0 0 0 1px var(--color-border), 0 8px 32px rgba(0, 0, 0, 0.35)',
+    boxShadow: '0 0 0 1px var(--color-border)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',

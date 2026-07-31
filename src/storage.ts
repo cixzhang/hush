@@ -43,9 +43,9 @@ const SESSION_PIN_KEY = 'hush:sessionsPinned';
 export function loadSessionsPinned(): boolean {
   try {
     const raw = localStorage.getItem(SESSION_PIN_KEY);
-    return raw === null ? true : raw === 'true';
+    return raw === null ? false : raw === 'true';
   } catch {
-    return true;
+    return false;
   }
 }
 
