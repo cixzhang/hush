@@ -1,7 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import { useRef, useState } from 'react';
 import { Theme } from '@astryxdesign/core/theme';
-import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { AppShell } from '@astryxdesign/core/AppShell';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
 import { IconButton } from '@astryxdesign/core/IconButton';
@@ -19,6 +18,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { useStore } from './useStore';
 import { ApiKeyDialog } from './SettingsDialog';
 import { SettingsPopover } from './SettingsPopover';
+import { THEMES, ThemeName } from './themes';
 import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
@@ -30,12 +30,6 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     gap: 'var(--spacing-1)',
-  },
-  emptyWrap: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   chatWrap: {
     height: '100%',
@@ -54,8 +48,10 @@ const styles = stylex.create({
 
 export default function App() {
   const themeMode = useStore((s) => s.settings.themeMode);
+  const themeName = useStore((s) => s.settings.themeName) as ThemeName;
+  const activeTheme = THEMES[themeName] ?? THEMES['midnight-oil'];
   return (
-    <Theme theme={neutralTheme} mode={themeMode}>
+    <Theme theme={activeTheme} mode={themeMode}>
       <AppShell
         topNav={<TopBar />}
         sideNav={undefined}
@@ -165,34 +161,32 @@ function ChatArea() {
 
   if (!session || messages.length === 0) {
     return (
-      <>
-        <div {...stylex.props(styles.emptyWrap)}>
-          <EmptyState
-            title={settings.apiKey ? 'Start a conversation' : 'Configure your API key'}
-            description={
-              settings.apiKey
-                ? 'Type a message below to begin chatting.'
-                : 'Click the settings icon in the top right to add your OpenRouter API key.'
-            }
-          />
-        </div>
-        <div {...stylex.props(styles.chatWrap)}>
-          <ChatLayout
-            composer={
-              <ChatComposerMinimal
-                value={input}
-                onChange={setInput}
-                onSubmit={handleSubmit}
-                isStreaming={isStreaming}
-                onStop={stopStreaming}
-                disabled={!settings.apiKey}
-              />
-            }
-          >
-            <ChatMessageList><span /></ChatMessageList>
-          </ChatLayout>
-        </div>
-      </>
+      <div {...stylex.props(styles.chatWrap)}>
+        <ChatLayout
+          emptyState={
+            <EmptyState
+              title={settings.apiKey ? 'Start a conversation' : 'Configure your API key'}
+              description={
+                settings.apiKey
+                  ? 'Type a message below to begin chatting.'
+                  : 'Click the settings icon in the top right to add your OpenRouter API key.'
+              }
+            />
+          }
+          composer={
+            <ChatComposerMinimal
+              value={input}
+              onChange={setInput}
+              onSubmit={handleSubmit}
+              isStreaming={isStreaming}
+              onStop={stopStreaming}
+              disabled={!settings.apiKey}
+            />
+          }
+        >
+          <ChatMessageList><span /></ChatMessageList>
+        </ChatLayout>
+      </div>
     );
   }
 

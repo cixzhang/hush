@@ -2,24 +2,28 @@ import * as stylex from '@stylexjs/stylex';
 import { useRef } from 'react';
 import { Popover } from '@astryxdesign/core/Popover';
 import { VStack } from '@astryxdesign/core/Stack';
-import { HStack } from '@astryxdesign/core/Stack';
 import { Text } from '@astryxdesign/core/Text';
 import { SegmentedControl, SegmentedControlItem } from '@astryxdesign/core/SegmentedControl';
+import { Selector } from '@astryxdesign/core/Selector';
 import { Button } from '@astryxdesign/core/Button';
 import { useStore } from './useStore';
+import { THEME_NAMES, THEME_LABELS, type ThemeName } from './themes';
 import { Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 
 const styles = stylex.create({
   popoverContent: {
     padding: 'var(--spacing-3)',
-    minWidth: '240px',
+    minWidth: '280px',
   },
   row: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 'var(--spacing-2)',
+  },
+  label: {
+    paddingTop: 'var(--spacing-1)',
   },
 });
 
@@ -34,13 +38,13 @@ export function SettingsPopover() {
       anchorRef={triggerRef as React.RefObject<HTMLElement>}
       placement="below"
       alignment="end"
-      width={260}
+      width={300}
       label="Settings"
       content={
         <div {...stylex.props(styles.popoverContent)}>
           <VStack gap={3}>
             <div {...stylex.props(styles.row)}>
-              <Text type="label">Appearance</Text>
+              <Text type="label">Mode</Text>
               <SegmentedControl
                 label="Theme mode"
                 value={settings.themeMode}
@@ -61,6 +65,19 @@ export function SettingsPopover() {
                 />
               </SegmentedControl>
             </div>
+            <VStack gap={1}>
+              <Text type="label">Theme</Text>
+              <Selector
+                label="Theme"
+                isLabelHidden
+                value={settings.themeName}
+                onChange={(v) => updateSettings({ themeName: v })}
+                options={THEME_NAMES.map((name) => ({
+                  value: name,
+                  label: THEME_LABELS[name],
+                }))}
+              />
+            </VStack>
             <Button
               label="API Key & Model"
               variant="ghost"

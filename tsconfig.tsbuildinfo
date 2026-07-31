@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/settingsdialog.tsx","./src/settingspopover.tsx","./src/main.tsx","./src/openrouter.ts","./src/persona.ts","./src/storage.ts","./src/store.ts","./src/types.ts","./src/usestore.ts","./src/vite-env.d.ts"],"version":"6.0.3"}
+{"root":["./src/app.tsx","./src/settingsdialog.tsx","./src/settingspopover.tsx","./src/main.tsx","./src/openrouter.ts","./src/persona.ts","./src/storage.ts","./src/store.ts","./src/themes.ts","./src/types.ts","./src/usestore.ts","./src/vite-env.d.ts"],"version":"6.0.3"}
