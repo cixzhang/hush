@@ -13,7 +13,7 @@ interface AppState {
   activeSessionId: string | null;
   settings: Settings;
   isStreaming: boolean;
-  isSettingsOpen: boolean;
+  isApiKeyOpen: boolean;
 
   // derived
   activeSession: () => Session | undefined;
@@ -26,7 +26,7 @@ interface AppState {
   sendMessage: (text: string) => Promise<void>;
   stopStreaming: () => void;
   updateSettings: (partial: Partial<Settings>) => void;
-  setSettingsOpen: (open: boolean) => void;
+  setApiKeyOpen: (open: boolean) => void;
 }
 
 let abortController: AbortController | null = null;
@@ -36,7 +36,7 @@ export const useStore = create<AppState>((set, get) => ({
   activeSessionId: loadActiveSession(),
   settings: loadSettings(),
   isStreaming: false,
-  isSettingsOpen: false,
+  isApiKeyOpen: false,
 
   activeSession: () => {
     const { sessions, activeSessionId } = get();
@@ -179,5 +179,5 @@ export const useStore = create<AppState>((set, get) => ({
     });
   },
 
-  setSettingsOpen: (open) => set({ isSettingsOpen: open }),
+  setApiKeyOpen: (open) => set({ isApiKeyOpen: open }),
 }));

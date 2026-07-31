@@ -11,16 +11,16 @@ import {
   ChatMessageList,
   ChatMessage,
   ChatMessageBubble,
+  ChatMessageMetadata,
   ChatComposer,
 } from '@astryxdesign/core/Chat';
 import { EmptyState } from '@astryxdesign/core/EmptyState';
 import { Text } from '@astryxdesign/core/Text';
-import { Avatar } from '@astryxdesign/core/Avatar';
 import { useStore } from './useStore';
-import { SettingsDialog } from './SettingsDialog';
+import { ApiKeyDialog } from './SettingsDialog';
+import { SettingsPopover } from './SettingsPopover';
 import {
   PlusIcon,
-  Cog6ToothIcon,
   ChatBubbleLeftRightIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -37,11 +37,18 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  chatWrap: {
+    height: '100%',
+    maxWidth: '768px',
+    margin: '0 auto',
+    overflow: 'hidden',
+  },
 });
 
 export default function App() {
+  const themeMode = useStore((s) => s.settings.themeMode);
   return (
-    <Theme theme={neutralTheme} mode="dark">
+    <Theme theme={neutralTheme} mode={themeMode}>
       <AppShell
         topNav={<TopBar />}
         sideNav={undefined}
@@ -50,7 +57,7 @@ export default function App() {
         variant="section"
       >
         <ChatArea />
-        <SettingsDialog />
+        <ApiKeyDialog />
       </AppShell>
     </Theme>
   );
@@ -62,7 +69,6 @@ function TopBar() {
   const newSession = useStore((s) => s.newSession);
   const selectSession = useStore((s) => s.selectSession);
   const deleteSession = useStore((s) => s.deleteSession);
-  const setSettingsOpen = useStore((s) => s.setSettingsOpen);
   const activeSession = sessions.find((s) => s.id === activeSessionId);
 
   const sessionItems = sessions.map((s) => ({
@@ -120,16 +126,7 @@ function TopBar() {
           )}
         </div>
       }
-      endContent={
-        <IconButton
-          label="Settings"
-          icon={<Cog6ToothIcon style={{ width: 18, height: 18 }} />}
-          variant="ghost"
-          size="sm"
-          tooltip="Settings"
-          onClick={() => setSettingsOpen(true)}
-        />
-      }
+      endContent={<SettingsPopover />}
     />
   );
 }
@@ -171,61 +168,65 @@ function ChatArea() {
             }
           />
         </div>
-        <ChatLayout
-          composer={
-            <ChatComposerMinimal
-              value={input}
-              onChange={setInput}
-              onSubmit={handleSubmit}
-              isStreaming={isStreaming}
-              onStop={stopStreaming}
-              disabled={!settings.apiKey}
-            />
-          }
-        >
-          <ChatMessageList><span /></ChatMessageList>
-        </ChatLayout>
+        <div {...stylex.props(styles.chatWrap)}>
+          <ChatLayout
+            composer={
+              <ChatComposerMinimal
+                value={input}
+                onChange={setInput}
+                onSubmit={handleSubmit}
+                isStreaming={isStreaming}
+                onStop={stopStreaming}
+                disabled={!settings.apiKey}
+              />
+            }
+          >
+            <ChatMessageList><span /></ChatMessageList>
+          </ChatLayout>
+        </div>
       </>
     );
   }
 
   return (
-    <ChatLayout
-      scrollRef={scrollRef}
-      emptyState={null}
-      composer={
-        <ChatComposerMinimal
-          value={input}
-          onChange={setInput}
-          onSubmit={handleSubmit}
-          isStreaming={isStreaming}
-          onStop={stopStreaming}
-        />
-      }
-    >
-      <ChatMessageList isStreaming={isStreaming}>
-        {messages.map((msg) => (
-          <ChatMessage
-            key={msg.id}
-            sender={msg.role === 'system' ? 'system' : msg.role}
-            avatar={
-              msg.role === 'assistant' ? (
-                <Avatar name="AI" size="sm" />
-              ) : msg.role === 'user' ? (
-                <Avatar name="You" size="sm" />
-              ) : undefined
-            }
-          >
-            <ChatMessageBubble
-              variant={msg.role === 'assistant' ? 'ghost' : 'filled'}
-              name={msg.role === 'assistant' ? 'Assistant' : msg.role === 'user' ? 'You' : undefined}
+    <div {...stylex.props(styles.chatWrap)}>
+      <ChatLayout
+        scrollRef={scrollRef}
+        emptyState={null}
+        composer={
+          <ChatComposerMinimal
+            value={input}
+            onChange={setInput}
+            onSubmit={handleSubmit}
+            isStreaming={isStreaming}
+            onStop={stopStreaming}
+          />
+        }
+      >
+        <ChatMessageList isStreaming={isStreaming}>
+          {messages.map((msg) => (
+            <ChatMessage
+              key={msg.id}
+              sender={msg.role === 'system' ? 'system' : msg.role}
             >
-              <Text type="body">{msg.content || '...'}</Text>
-            </ChatMessageBubble>
-          </ChatMessage>
-        ))}
-      </ChatMessageList>
-    </ChatLayout>
+              <ChatMessageBubble
+                variant={msg.role === 'assistant' ? 'ghost' : 'filled'}
+                metadata={
+                  <ChatMessageMetadata
+                    timestamp={new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  />
+                }
+              >
+                <Text type="body">{msg.content || '...'}</Text>
+              </ChatMessageBubble>
+            </ChatMessage>
+          ))}
+        </ChatMessageList>
+      </ChatLayout>
+    </div>
   );
 }
 

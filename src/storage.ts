@@ -22,7 +22,7 @@ export function loadSettings(): Settings {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { apiKey: '', model: 'anthropic/claude-sonnet-4' };
+  return { apiKey: '', model: 'anthropic/claude-sonnet-4', themeMode: 'dark' };
 }
 
 export function saveSettings(settings: Settings) {

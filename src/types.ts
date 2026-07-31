@@ -17,4 +17,5 @@ export interface Session {
 export interface Settings {
   apiKey: string;
   model: string;
+  themeMode: 'light' | 'dark';
 }

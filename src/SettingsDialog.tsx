@@ -20,21 +20,10 @@ const styles = stylex.create({
   },
 });
 
-const POPULAR_MODELS = [
-  'anthropic/claude-sonnet-4',
-  'anthropic/claude-haiku-4',
-  'openai/gpt-4o',
-  'openai/gpt-4o-mini',
-  'google/gemini-flash-2.0',
-  'meta-llama/llama-4-scout',
-  'x-ai/grok-4',
-  'z-ai/glm-4.5',
-];
-
-export function SettingsDialog() {
-  const isOpen = useStore((s) => s.isSettingsOpen);
+export function ApiKeyDialog() {
+  const isOpen = useStore((s) => s.isApiKeyOpen);
   const settings = useStore((s) => s.settings);
-  const setSettingsOpen = useStore((s) => s.setSettingsOpen);
+  const setApiKeyOpen = useStore((s) => s.setApiKeyOpen);
   const updateSettings = useStore((s) => s.updateSettings);
 
   const [apiKey, setApiKey] = useState(settings.apiKey);
@@ -42,21 +31,20 @@ export function SettingsDialog() {
 
   const handleSave = () => {
     updateSettings({ apiKey: apiKey.trim(), model: model.trim() });
-    setSettingsOpen(false);
+    setApiKeyOpen(false);
   };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      // reset local state on close without saving
       setApiKey(settings.apiKey);
       setModel(settings.model);
     }
-    setSettingsOpen(open);
+    setApiKeyOpen(open);
   };
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={handleOpenChange} purpose="form" width={480}>
-      <DialogHeader title="Settings" subtitle="OpenRouter API key & model" onOpenChange={handleOpenChange} />
+      <DialogHeader title="OpenRouter API Key" subtitle="Stored locally in your browser" onOpenChange={handleOpenChange} />
       <div {...stylex.props(styles.body)}>
         <VStack gap={4}>
           <VStack gap={1}>
@@ -70,7 +58,7 @@ export function SettingsDialog() {
               type="password"
             />
             <Text type="supporting">
-              Get your key at openrouter.ai/keys — stored locally in your browser only.
+              Get your key at openrouter.ai/keys
             </Text>
           </VStack>
           <VStack gap={1}>
@@ -82,9 +70,6 @@ export function SettingsDialog() {
               onChange={(v) => setModel(v)}
               placeholder="anthropic/claude-sonnet-4"
             />
-            <Text type="supporting">
-              Popular: {POPULAR_MODELS.slice(0, 4).join(', ')}
-            </Text>
           </VStack>
         </VStack>
       </div>
