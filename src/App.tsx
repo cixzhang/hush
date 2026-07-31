@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Theme } from '@astryxdesign/core/theme';
 import { AppShell } from '@astryxdesign/core/AppShell';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
@@ -14,12 +14,12 @@ import {
   ChatComposer,
 } from '@astryxdesign/core/Chat';
 import { EmptyState } from '@astryxdesign/core/EmptyState';
-import { Text } from '@astryxdesign/core/Text';
 import { useStore } from './useStore';
 import { ApiKeyDialog } from './SettingsDialog';
 import { SettingsPopover } from './SettingsPopover';
 import { THEMES, type ThemeName } from './themes';
 import { TOOL_META } from './tools';
+import { Markdown } from './Markdown';
 import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
@@ -158,7 +158,6 @@ function ChatArea() {
   const [input, setInput] = useState('');
   const session = sessions.find((s) => s.id === activeSessionId);
   const messages = session?.messages ?? [];
-  const scrollRef = useRef<HTMLElement>(null);
 
   const handleSubmit = (value: string) => {
     if (!value.trim() || isStreaming) return;
@@ -207,7 +206,6 @@ function ChatArea() {
     <div {...stylex.props(styles.chatWrap)}>
       <ChatLayout
         xstyle={styles.chatLayout}
-        scrollRef={scrollRef}
         emptyState={null}
         composer={
           <ChatComposerMinimal
@@ -260,7 +258,7 @@ function ChatArea() {
                     })}
                   </div>
                 )}
-                <Text type="body">{msg.content || '...'}</Text>
+                <Markdown content={msg.content || '...'} />
               </ChatMessageBubble>
             </ChatMessage>
           ))}

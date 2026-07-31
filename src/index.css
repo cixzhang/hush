@@ -203,3 +203,106 @@ button[data-variant="outline"]:hover {
   max-width: 100%;
   border-radius: 6px;
 }
+
+/* ===== Message list bottom padding so content isn't hidden under composer ===== */
+.astryx-chat-layout > div:first-child {
+  padding-block-end: 120px !important;
+}
+
+/* ===== Markdown rendering in chat messages ===== */
+.hush-md {
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.hush-md p {
+  margin: 0 0 0.5em 0;
+}
+
+.hush-md p:last-child {
+  margin-bottom: 0;
+}
+
+.hush-md pre {
+  background: var(--color-background-body, rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  border-radius: 6px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  font-family: var(--font-family-code, ui-monospace, monospace);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0.5em 0;
+}
+
+.hush-md code {
+  font-family: var(--font-family-code, ui-monospace, monospace);
+  font-size: 0.85em;
+  background: var(--color-background-muted, rgba(0, 0, 0, 0.05));
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.hush-md pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.hush-md ul,
+.hush-md ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.hush-md li {
+  margin: 0.2em 0;
+}
+
+.hush-md h1,
+.hush-md h2,
+.hush-md h3 {
+  margin: 0.75em 0 0.4em 0;
+  font-weight: 600;
+}
+
+.hush-md h1 { font-size: 1.3em; }
+.hush-md h2 { font-size: 1.15em; }
+.hush-md h3 { font-size: 1em; }
+
+.hush-md a {
+  color: var(--color-accent, #0070f3);
+  text-decoration: underline;
+}
+
+.hush-md blockquote {
+  border-left: 3px solid var(--color-border-emphasized, #ccc);
+  padding-left: 0.75em;
+  margin: 0.5em 0;
+  color: var(--color-text-secondary);
+}
+
+.hush-md img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.5em 0;
+}
+
+.hush-md table {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  font-size: 0.85em;
+}
+
+.hush-md th,
+.hush-md td {
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.hush-md hr {
+  border: none;
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  margin: 1em 0;
+}
