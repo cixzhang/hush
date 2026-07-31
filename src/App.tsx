@@ -11,6 +11,7 @@ import {
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
 import { IconButton } from '@astryxdesign/core/IconButton';
 import { Button } from '@astryxdesign/core/Button';
+import { DropdownMenu } from '@astryxdesign/core/DropdownMenu';
 import {
   ChatLayout,
   ChatMessageList,
@@ -30,6 +31,7 @@ import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
   TrashIcon,
+  ViewColumnsIcon,
 } from '@heroicons/react/24/outline';
 
 const styles = stylex.create({
@@ -85,7 +87,20 @@ export default function App() {
 }
 
 function TopBar() {
+  const sessions = useStore((s) => s.sessions);
+  const activeSessionId = useStore((s) => s.activeSessionId);
+  const sessionsPinned = useStore((s) => s.sessionsPinned);
   const newSession = useStore((s) => s.newSession);
+  const selectSession = useStore((s) => s.selectSession);
+  const deleteSession = useStore((s) => s.deleteSession);
+  const setSessionsPinned = useStore((s) => s.setSessionsPinned);
+  const activeSession = sessions.find((s) => s.id === activeSessionId);
+
+  const sessionItems = sessions.map((s) => ({
+    label: s.title || 'Untitled',
+    onClick: () => selectSession(s.id),
+    icon: <ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />,
+  }));
 
   return (
     <TopNav
@@ -110,9 +125,50 @@ function TopBar() {
             tooltip="New chat"
             onClick={() => newSession()}
           />
+          {sessions.length > 0 && (
+            <DropdownMenu
+              button={{
+                label: activeSession?.title || 'Sessions',
+                variant: 'ghost',
+                size: 'sm',
+                icon: <ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />,
+              }}
+              items={
+                sessionItems.length > 0
+                  ? [
+                      ...sessionItems,
+                      { type: 'divider' as const },
+                      {
+                        label: 'Delete current session',
+                        onClick: () => activeSessionId && deleteSession(activeSessionId),
+                        icon: <TrashIcon style={{ width: 14, height: 14 }} />,
+                      },
+                    ]
+                  : []
+              }
+              hasChevron
+              menuWidth={260}
+            />
+          )}
         </div>
       }
-      endContent={<SettingsPopover />}
+      endContent={
+        <>
+          <IconButton
+            label="Toggle sessions panel"
+            icon={
+              <ViewColumnsIcon
+                style={{ width: 16, height: 16, color: sessionsPinned ? 'var(--color-accent)' : undefined }}
+              />
+            }
+            variant="ghost"
+            size="sm"
+            tooltip={sessionsPinned ? 'Hide side panel' : 'Show side panel'}
+            onClick={() => setSessionsPinned(!sessionsPinned)}
+          />
+          <SettingsPopover />
+        </>
+      }
     />
   );
 }
