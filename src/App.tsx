@@ -5,11 +5,10 @@ import { AppShell } from '@astryxdesign/core/AppShell';
 import {
   SideNav,
   SideNavItem,
-  SideNavSection,
 } from '@astryxdesign/core/SideNav';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
 import { IconButton } from '@astryxdesign/core/IconButton';
-import { Button } from '@astryxdesign/core/Button';
+import { Heading } from '@astryxdesign/core/Heading';
 import { DropdownMenu } from '@astryxdesign/core/DropdownMenu';
 import {
   ChatLayout,
@@ -31,6 +30,7 @@ import {
   ChatBubbleLeftRightIcon,
   TrashIcon,
   ViewColumnsIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 
 const styles = stylex.create({
@@ -58,31 +58,29 @@ const styles = stylex.create({
     maxWidth: '768px',
     margin: '0 auto',
   },
-  footerButton: {
-    width: '100%',
-    justifyContent: 'flex-start',
-  },
   floatingRoot: {
     position: 'fixed',
     inset: 0,
     zIndex: 40,
-  },
-  floatingScrim: {
-    position: 'absolute',
-    inset: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    pointerEvents: 'none',
   },
   floatingPanel: {
     position: 'absolute',
-    top: 'var(--appshell-header-height, 64px)',
+    top: 0,
     bottom: 0,
     insetInlineStart: 0,
     backgroundColor: 'var(--color-background-surface)',
     boxShadow: '0 0 0 1px var(--color-border), 0 8px 32px rgba(0, 0, 0, 0.35)',
-    borderStartEndRadius: 'var(--radius-2, 8px)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    pointerEvents: 'auto',
+  },
+  sideHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 'var(--spacing-2)',
   },
 });
 
@@ -127,11 +125,6 @@ function FloatingSessionPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div {...stylex.props(styles.floatingRoot)}>
-      <div
-        {...stylex.props(styles.floatingScrim)}
-        role="presentation"
-        onClick={onClose}
-      />
       <div {...stylex.props(styles.floatingPanel)}>
         <SessionSideNav />
       </div>
@@ -219,57 +212,48 @@ function SessionSideNav() {
   const sessions = useStore((s) => s.sessions);
   const activeSessionId = useStore((s) => s.activeSessionId);
   const setSessionsPinned = useStore((s) => s.setSessionsPinned);
-  const newSession = useStore((s) => s.newSession);
   const selectSession = useStore((s) => s.selectSession);
   const deleteSession = useStore((s) => s.deleteSession);
 
   return (
     <SideNav
       resizable={{ autoSaveId: 'hush:sessionsWidth', minWidth: 200, maxWidth: 320 }}
-      topContent={
-        <Button
-          label="New chat"
-          variant="secondary"
-          size="sm"
-          onClick={() => newSession()}
-          icon={<PlusIcon style={{ width: 14, height: 14 }} />}
-        />
-      }
-      footer={
-        <Button
-          label="Show as button"
-          variant="ghost"
-          size="sm"
-          onClick={() => setSessionsPinned(false)}
-          icon={<ChatBubbleLeftRightIcon style={{ width: 14, height: 14 }} />}
-          xstyle={styles.footerButton}
-        />
+      header={
+        <div {...stylex.props(styles.sideHeader)}>
+          <Heading level={4}>Sessions</Heading>
+          <IconButton
+            label="Show as button"
+            icon={<ArrowTopRightOnSquareIcon style={{ width: 14, height: 14 }} />}
+            variant="ghost"
+            size="sm"
+            tooltip="Show as button"
+            onClick={() => setSessionsPinned(false)}
+          />
+        </div>
       }
     >
-      <SideNavSection title="Sessions">
-        {sessions.map((s) => (
-          <SideNavItem
-            key={s.id}
-            label={s.title || 'Untitled'}
-            icon={<ChatBubbleLeftRightIcon style={{ width: 16, height: 16 }} />}
-            isSelected={s.id === activeSessionId}
-            onClick={() => selectSession(s.id)}
-            endContent={
-              <IconButton
-                label="Delete session"
-                icon={<TrashIcon style={{ width: 14, height: 14 }} />}
-                variant="ghost"
-                size="sm"
-                tooltip="Delete session"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteSession(s.id);
-                }}
-              />
-            }
-          />
-        ))}
-      </SideNavSection>
+      {sessions.map((s) => (
+        <SideNavItem
+          key={s.id}
+          label={s.title || 'Untitled'}
+          icon={<ChatBubbleLeftRightIcon style={{ width: 16, height: 16 }} />}
+          isSelected={s.id === activeSessionId}
+          onClick={() => selectSession(s.id)}
+          endContent={
+            <IconButton
+              label="Delete session"
+              icon={<TrashIcon style={{ width: 14, height: 14 }} />}
+              variant="ghost"
+              size="sm"
+              tooltip="Delete session"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteSession(s.id);
+              }}
+            />
+          }
+        />
+      ))}
     </SideNav>
   );
 }
