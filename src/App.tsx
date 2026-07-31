@@ -19,7 +19,7 @@ import { ApiKeyDialog } from './SettingsDialog';
 import { SettingsPopover } from './SettingsPopover';
 import { THEMES, type ThemeName } from './themes';
 import { TOOL_META } from './tools';
-import { Markdown } from './Markdown';
+import { Markdown } from '@astryxdesign/core/Markdown';
 import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
@@ -269,7 +269,7 @@ function ChatArea() {
                     </div>
                   </details>
                 )}
-                <Markdown content={msg.content || '...'} />
+                <Markdown isStreaming={isStreaming}>{msg.content || '...'}</Markdown>
               </ChatMessageBubble>
             </ChatMessage>
           ))}
