@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Theme } from '@astryxdesign/core/theme';
 import { AppShell } from '@astryxdesign/core/AppShell';
 import { TopNav, TopNavHeading } from '@astryxdesign/core/TopNav';
@@ -18,7 +18,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { useStore } from './useStore';
 import { ApiKeyDialog } from './SettingsDialog';
 import { SettingsPopover } from './SettingsPopover';
-import { THEMES, ThemeName } from './themes';
+import { THEMES, type ThemeName } from './themes';
 import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
@@ -36,6 +36,12 @@ const styles = stylex.create({
     maxWidth: '768px',
     margin: '0 auto',
     overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  chatLayout: {
+    flex: 1,
+    minHeight: 0,
   },
   composer: {
     width: '100%',
@@ -50,6 +56,11 @@ export default function App() {
   const themeMode = useStore((s) => s.settings.themeMode);
   const themeName = useStore((s) => s.settings.themeName) as ThemeName;
   const activeTheme = THEMES[themeName] ?? THEMES['midnight-oil'];
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme-name', themeName);
+  }, [themeName]);
+
   return (
     <Theme theme={activeTheme} mode={themeMode}>
       <AppShell
@@ -163,6 +174,7 @@ function ChatArea() {
     return (
       <div {...stylex.props(styles.chatWrap)}>
         <ChatLayout
+          xstyle={styles.chatLayout}
           emptyState={
             <EmptyState
               title={settings.apiKey ? 'Start a conversation' : 'Configure your API key'}
@@ -193,6 +205,7 @@ function ChatArea() {
   return (
     <div {...stylex.props(styles.chatWrap)}>
       <ChatLayout
+        xstyle={styles.chatLayout}
         scrollRef={scrollRef}
         emptyState={null}
         composer={

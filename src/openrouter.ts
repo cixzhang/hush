@@ -1,5 +1,5 @@
 import type { Message, Settings } from './types';
-import { HUSH_SYSTEM_PROMPT } from './persona';
+import { getPersona } from './persona';
 
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
@@ -18,7 +18,7 @@ export async function streamChat(
     body: JSON.stringify({
       model: settings.model,
       messages: [
-        { role: 'system', content: HUSH_SYSTEM_PROMPT },
+        { role: 'system', content: getPersona(settings.themeName) },
         ...messages.map((m) => ({ role: m.role, content: m.content })),
       ],
       stream: true,

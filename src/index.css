@@ -1,4 +1,112 @@
 html, body, #root {
   height: 100%;
   margin: 0;
+  font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  background-color: var(--color-background-body, #ffffff);
+  color: var(--color-text-primary, #000000);
+}
+
+/* ===== Theme-specific visual treatments ===== */
+
+/* Violet Hour: soft rainbow gradient borders on cards/popovers */
+[data-theme-name="violet-hour"] {
+  --gradient-rainbow: linear-gradient(
+    135deg,
+    rgba(167, 139, 250, 0.5),
+    rgba(124, 58, 237, 0.3),
+    rgba(96, 165, 250, 0.4),
+    rgba(167, 139, 250, 0.5)
+  );
+}
+
+[data-theme-name="violet-hour"] [data-component="card"],
+[data-theme-name="violet-hour"] [data-component="popover-content"] {
+  border-image: linear-gradient(
+    135deg,
+    rgba(167, 139, 250, 0.4),
+    rgba(124, 58, 237, 0.2),
+    rgba(96, 165, 250, 0.35),
+    rgba(167, 139, 250, 0.4)
+  ) 1;
+}
+
+/* Violet Hour: rainbow gradient on emphasized borders */
+[data-theme-name="violet-hour"] [data-component="top-nav"] {
+  border-bottom-image: linear-gradient(
+    90deg,
+    rgba(167, 139, 250, 0.15),
+    rgba(124, 58, 237, 0.25),
+    rgba(96, 165, 250, 0.15),
+    rgba(167, 139, 250, 0.15)
+  ) 1;
+}
+
+/* Violet Hour: soft animated gradient on buttons with variant=outline */
+[data-theme-name="violet-hour"] button[data-variant="outline"],
+[data-theme-name="violet-hour"] button[data-variant="ghost"]:hover {
+  border-color: transparent;
+  background-image: linear-gradient(var(--color-background-surface), var(--color-background-surface)),
+    linear-gradient(135deg, rgba(167, 139, 250, 0.5), rgba(96, 165, 250, 0.4), rgba(167, 139, 250, 0.5));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: background-image 0.6s ease, border-color 0.3s ease;
+}
+
+[data-theme-name="violet-hour"] button[data-variant="outline"]:hover {
+  background-image: linear-gradient(var(--color-background-surface), var(--color-background-surface)),
+    linear-gradient(135deg, rgba(167, 139, 250, 0.7), rgba(96, 165, 250, 0.6), rgba(167, 139, 250, 0.7));
+}
+
+/* ===== Secondary button outlines per theme ===== */
+/* These apply a visible border to ghost/outline buttons in all themes */
+
+button[data-variant="ghost"] {
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+button[data-variant="ghost"]:hover {
+  border-color: var(--color-border-emphasized);
+}
+
+button[data-variant="outline"] {
+  border: 1px solid var(--color-border-emphasized);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+button[data-variant="outline"]:hover {
+  border-color: var(--color-accent);
+}
+
+/* Cold Cathode: subtle scanline overlay */
+[data-theme-name="cold-cathode"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(74, 222, 128, 0.03) 0px,
+    rgba(74, 222, 128, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Cold Cathode: glow on accent text and borders */
+[data-theme-name="cold-cathode"] {
+  --glow-accent: 0 0 8px rgba(74, 222, 128, 0.3);
+}
+
+[data-theme-name="cold-cathode"] [data-component="top-nav-heading"] {
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+[data-theme-name="cold-cathode"] [data-component="chat-message-bubble"][data-variant="ghost"] {
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.05);
 }
