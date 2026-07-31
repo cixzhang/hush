@@ -92,7 +92,8 @@ export const midnightOilTheme = defineTheme({
   name: 'midnight-oil',
   extends: neutralTheme,
   typography: {
-    body: { family: 'Lora', fallbacks: 'Georgia, "Times New Roman", serif' },
+    // Serif reserved for headings; body stays sans for readable long-form text
+    body: { family: 'Inter', fallbacks: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' },
     heading: { family: 'Lora', fallbacks: 'Georgia, "Times New Roman", serif', weights: { 3: 'bold', 4: 'bold' } },
     code: { family: 'ui-monospace', fallbacks: '"SF Mono", Monaco, Consolas, monospace' },
   },
@@ -154,7 +155,8 @@ export const paperBleedTheme = defineTheme({
   name: 'paper-bleed',
   extends: neutralTheme,
   typography: {
-    body: { family: 'Fraunces', fallbacks: 'Georgia, "Times New Roman", serif' },
+    // Serif reserved for headings; body stays sans for readable long-form text
+    body: { family: 'Inter', fallbacks: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' },
     heading: { family: 'Fraunces', fallbacks: 'Georgia, "Times New Roman", serif', weights: { 3: 'bold', 4: 'bold' } },
     code: { family: 'ui-monospace', fallbacks: '"SF Mono", Monaco, Consolas, monospace' },
   },
