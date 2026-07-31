@@ -135,64 +135,62 @@ export async function streamChat(
       return;
     }
 
-    // Process tool calls
-    const completedToolCalls: ToolCall[] = [];
-    for (const [, entry] of toolCallsMap) {
+    // Process tool calls — all should appear stacked in the UI simultaneously
+    const toolCallEntries = Array.from(toolCallsMap.entries()).map(([, entry]) => {
       let parsedArgs: Record<string, unknown> = {};
       try {
         parsedArgs = entry.args ? JSON.parse(entry.args) : {};
       } catch {
         // args might be incomplete
       }
-
-      const tc: ToolCall = {
+      return {
         id: entry.id || Math.random().toString(36).slice(2),
         name: entry.name as ToolCall['name'],
         args: parsedArgs,
-        status: 'running',
       };
+    });
+
+    // Add ONE assistant message with ALL tool calls (correct API protocol)
+    apiMessages.push({
+      role: 'assistant',
+      content: contentText || null,
+      tool_calls: toolCallEntries.map(tc => ({
+        id: tc.id,
+        type: 'function',
+        function: { name: tc.name, arguments: JSON.stringify(tc.args) },
+      })),
+    });
+
+    // Mark all as running immediately so they stack in the UI
+    const toolCalls: ToolCall[] = toolCallEntries.map(tc => ({
+      ...tc,
+      status: 'running' as const,
+    }));
+    for (const tc of toolCalls) {
       onToolCallUpdate?.(tc);
-      completedToolCalls.push(tc);
+    }
 
-      // Add the assistant's tool call message to the API conversation
-      apiMessages.push({
-        role: 'assistant',
-        content: contentText || null,
-        tool_calls: [{
-          id: tc.id,
-          type: 'function',
-          function: { name: tc.name, arguments: JSON.stringify(tc.args) },
-        }],
-      });
-
-      // Execute the tool
+    // Execute all tools concurrently
+    await Promise.all(toolCalls.map(async (tc) => {
       try {
         const result = await executeTool(tc.name, tc.args);
         tc.result = result;
         tc.status = 'done';
-        onToolCallUpdate?.(tc);
-
-        // Add tool result to API conversation
-        apiMessages.push({
-          role: 'tool',
-          content: result,
-          tool_call_id: tc.id,
-        });
       } catch (e) {
         tc.error = (e as Error).message;
         tc.status = 'error';
-        onToolCallUpdate?.(tc);
-
-        apiMessages.push({
-          role: 'tool',
-          content: `Error: ${(e as Error).message}`,
-          tool_call_id: tc.id,
-        });
       }
-    }
+      onToolCallUpdate?.(tc);
+
+      // Add tool result to API conversation
+      apiMessages.push({
+        role: 'tool',
+        content: tc.result || `Error: ${tc.error}`,
+        tool_call_id: tc.id,
+      });
+    }));
 
     // Loop continues — send the updated messages back to get the final response
-    // Reset content text for next iteration
     contentText = '';
     toolCallsMap = new Map();
   }
