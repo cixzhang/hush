@@ -130,45 +130,48 @@ async function searchWikipedia(q: string): Promise<SearchHit[]> {
 
 export default async function handler(req: any, res: any) {
   const q = String((req.query as any).q || '').trim();
+  const debug = (req.query as any).debug === '1';
   if (!q) {
     res.status(400).json({ error: 'Missing query' });
     return;
   }
 
   let results: SearchHit[] = [];
+  const diag: Record<string, number> = {};
   try {
     results = await searchDuckDuckGo(q);
-  } catch {
-    // ignore, try next
+    diag.ddg = results.length;
+  } catch (e: any) {
+    diag.ddg = -1;
   }
   if (results.length === 0) {
     try {
       results = await searchBing(q);
-    } catch {
-      // ignore
+      diag.bing = results.length;
+    } catch (e: any) {
+      diag.bing = -1;
     }
   }
   if (results.length === 0) {
     try {
       results = await searchWikipedia(q);
-    } catch {
-      // ignore
+      diag.wiki = results.length;
+    } catch (e: any) {
+      diag.wiki = -1;
     }
   }
 
   results = dedupe(results);
 
-  if (results.length === 0) {
-    res.status(200).json({
-      results: [],
-      text: 'No results found. Try: https://duckduckgo.com/?q=' + encodeURIComponent(q),
-    });
-    return;
-  }
-
-  const text = results
-    .map((r) => `• ${r.title}\n  ${r.url}${r.snippet ? `\n  ${r.snippet}` : ''}`)
-    .join('\n');
-
-  res.status(200).json({ results, text });
+  const payload: any = {
+    results,
+    text:
+      results.length === 0
+        ? 'No results found. Try: https://duckduckgo.com/?q=' + encodeURIComponent(q)
+        : results
+            .map((r) => `• ${r.title}\n  ${r.url}${r.snippet ? `\n  ${r.snippet}` : ''}`)
+            .join('\n'),
+  };
+  if (debug) payload.debug = diag;
+  res.status(200).json(payload);
 }
