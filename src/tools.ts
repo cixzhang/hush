@@ -142,71 +142,25 @@ export const TOOL_SCHEMAS = [
 
 async function webSearch(args: { query: string }): Promise<string> {
   const q = encodeURIComponent(args.query);
-  const results: string[] = [];
-
-  // 1. Try DuckDuckGo instant answer
-  try {
-    const ddgUrl = `https://api.duckduckgo.com/?q=${q}&format=json&no_html=1&skip_disambig=1`;
-    const ddgRes = await fetch(ddgUrl);
-    if (ddgRes.ok) {
-      const data = await ddgRes.json();
-      if (data.AbstractText) {
-        results.push(`${data.AbstractText}\nSource: ${data.AbstractURL || 'DuckDuckGo'}`);
-      }
-      if (data.RelatedTopics) {
-        for (const topic of data.RelatedTopics.slice(0, 3)) {
-          if (topic.Text) {
-            results.push(`• ${topic.Text}\n  ${topic.FirstURL || ''}`);
-          }
-        }
-      }
-    }
-  } catch {}
-
-  // 2. Wikipedia search (always run — more reliable)
-  try {
-    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&format=json&origin=*&srlimit=5`;
-    const wikiRes = await fetch(wikiUrl);
-    if (wikiRes.ok) {
-      const wikiData = await wikiRes.json();
-      const searchResults = wikiData.query?.search || [];
-      if (searchResults.length > 0) {
-        if (results.length > 0) results.push('');
-        results.push('Wikipedia results:');
-        for (const r of searchResults) {
-          const snippet = r.snippet.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&#039;/g, "'").trim();
-          results.push(`• ${r.title}: ${snippet}\n  https://en.wikipedia.org/?curid=${r.pageid}`);
-        }
-      }
-    }
-  } catch {}
-
-  // 3. Fallback
-  if (results.length === 0) {
-    results.push(`No results found. See: https://duckduckgo.com/?q=${q}`);
+  // Search runs server-side (Vercel function) to avoid browser CORS blocks.
+  const res = await fetch(`/api/web-search?q=${q}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Search failed: ${res.status}`);
   }
-
-  return results.join('\n');
+  const data = await res.json();
+  return data.text || 'No results found.';
 }
 
 async function urlFetch(args: { url: string }): Promise<string> {
-  const res = await fetch(args.url);
-  if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-  const text = await res.text();
-  // Basic HTML-to-text: strip tags, collapse whitespace
-  const stripped = text
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-  return stripped.slice(0, 5000);
+  // Fetch runs server-side (Vercel function) to avoid browser CORS blocks.
+  const res = await fetch(`/api/url-fetch?url=${encodeURIComponent(args.url)}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Fetch failed: ${res.status}`);
+  }
+  const data = await res.json();
+  return data.text || '(no readable text content on page)';
 }
 
 async function weather(args: { location: string }): Promise<string> {
